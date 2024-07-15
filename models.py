@@ -2,7 +2,6 @@ from django.db import models
 
 # Shop's model
 
-#one to one ยัง งงๆไม่รู้ว่าเเค่ postgres ไม่รองรับการเเสดงเเบบ one one ไหม
 
 class Customer(models.Model):
     first_name = models.CharField(max_length=150, null=False)
@@ -33,7 +32,7 @@ class ProductCategory(models.Model):
 class Order(models.Model):
     customer_id = models.ForeignKey("shop.Customer", on_delete=models.PROTECT, null=False)
     order_date = models.DateField(auto_now=False, auto_now_add=False, null=False)
-    remark = models.TextField(null=True)
+    remark = models.TextField(null=True) 
 
 class OrderItem(models.Model):
     order_id = models.ForeignKey("shop.Order", on_delete=models.PROTECT, null=False)
@@ -55,10 +54,14 @@ class PaymentItem(models.Model):
 
 class PaymentMethod(models.Model):
 
-    CHOICES = (
-        ('qr', 'QR'),
-        ('credit', 'CREDIT'),
-    )
+    qr = 'QR'
+    credit = 'CR'
+
+    CHOICES = {
+        qr: 'QR',
+        credit: 'CREDIT'
+    }
+
     payment_id = models.ForeignKey("shop.Payment", on_delete=models.PROTECT, null=False)
-    method = models.CharField(choices= CHOICES,null=False)
+    method = models.CharField(choices= CHOICES, null=False)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
