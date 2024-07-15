@@ -29,7 +29,7 @@
   timezone.now() จะให้เวลา ปจบ. ของ utc -> tzinfo = UTC (เป็นNaive)
  เราสามารถกำหนด timezone ใน settings.py ได้เช่นเราตั้งเป็น TIME_ZONE = "Asia/Bangkok"
 
- งง
+ timezone.localtime() มี 2 วิธีใช้
   timezone.localtime() เเปลงเวลาของ timezone อื่นที่เป็น aware เป็น timezone ที่เราตั้งไว้ใน settings
  timezone.localtime() ให้เวลาปจบ ของ timezone ที่เราตั้งไว้ใน settings
 
