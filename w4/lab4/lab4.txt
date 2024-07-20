@@ -1,0 +1,83 @@
+from shop.models import *
+
+1.1
+Order.objects.filter(order_date__month=5)[:10]
+
+<QuerySet [<Order: ORDER ID:22 DATE: 2024-05-01 PRICE: 4890.00
+>, <Order: ORDER ID:23 DATE: 2024-05-01 PRICE: 2540.00
+>, <Order: ORDER ID:24 DATE: 2024-05-01 PRICE: 1720.00
+>, <Order: ORDER ID:25 DATE: 2024-05-02 PRICE: 322499.00
+>, <Order: ORDER ID:26 DATE: 2024-05-02 PRICE: 3399.00
+>, <Order: ORDER ID:27 DATE: 2024-05-02 PRICE: 1190.00
+>, <Order: ORDER ID:28 DATE: 2024-05-03 PRICE: 9499.00
+>, <Order: ORDER ID:29 DATE: 2024-05-03 PRICE: 700.00
+>, <Order: ORDER ID:30 DATE: 2024-05-03 PRICE: 1690.00
+>, <Order: ORDER ID:31 DATE: 2024-05-04 PRICE: 3280.00
+
+1.2
+Product.objects.filter(description__endswith="features.")
+
+<QuerySet [<Product: PRODUCT ID: 1, DESCRIPTION: A sleek and powerful smartphone with advanced features.
+>, <Product: PRODUCT ID: 7, DESCRIPTION: High-resolution digital camera with advanced photography features.
+>, <Product: PRODUCT ID: 10, DESCRIPTION: A stylish smartwatch with health monitoring and notification features.
+>, <Product: PRODUCT ID: 14, DESCRIPTION: Split air conditioner with remote control and energy-saving features.
+>, <Product: PRODUCT ID: 45, DESCRIPTION: Customizable racing track set with loop and jump features.
+>]>
+
+1.3
+Product.objects.filter(price__gte=5000)
+
+<QuerySet [<Product: PRODUCT ID: 1, NAME: Smartphone, PRICE: 5900.00
+>, <Product: PRODUCT ID: 2, NAME: Laptop, PRICE: 25999.00
+>, <Product: PRODUCT ID: 3, NAME: Smart TV, PRICE: 8900.00
+>, <Product: PRODUCT ID: 5, NAME: Tablet, PRICE: 12900.00
+>, <Product: PRODUCT ID: 6, NAME: Gaming Console, PRICE: 5000.00
+>, <Product: PRODUCT ID: 7, NAME: Digital Camera, PRICE: 32000.00
+>, <Product: PRODUCT ID: 11, NAME: Refrigerator, PRICE: 9000.00
+>, <Product: PRODUCT ID: 14, NAME: Air Conditioner, PRICE: 18900.00
+>, <Product: PRODUCT ID: 31, NAME: Sofa, PRICE: 7000.00
+>, <Product: PRODUCT ID: 54, NAME: Automatic Pet Feeder, PRICE: 7900.00
+>, <Product: PRODUCT ID: 61, NAME: Diamond Stud Earrings, PRICE: 320000.00
+>, <Product: PRODUCT ID: 62, NAME: Silver Charm Bracelet, PRICE: 70000.00
+>, <Product: PRODUCT ID: 63, NAME: Gold Pendant Necklace, PRICE: 59000.00
+>, <Product: PRODUCT ID: 64, NAME: Gemstone Ring, PRICE: 9000.00
+>, <Product: PRODUCT ID: 65, NAME: Rose Gold Hoop Earrings, PRICE: 1200000.00
+>]>
+
+1.4
+Product.objects.filter(price__gt=100, price__lt=200).order_by('-price').first()
+
+Product: PRODUCT ID: 28, NAME: Women's Sweater, PRICE: 190.00
+
+2.1
+first_product = Product(name="Philosopher's Stone (1997)", description="By J. K. Rowling.", remaining_amount=20, price=790)
+first_product.save()
+first_cat =  ProductCategory.objects.get(pk=7)
+first_product.categories.add(first_cat)
+
+second_product = Product(name="Me Before You", description="A romance novel written by Jojo", remaining_amount=40, price=390)
+second_product.save()
+second_cat =  ProductCategory.objects.get(pk=7)
+second_product.categories.add(second_cat)
+
+third_product = Product(name="Notebook HP Pavilion Silver", description="Display Screen. 16.0", remaining_amount=10, price=20000)
+third_product.save()
+IT =  ProductCategory.objects.get(pk=1)
+third_product.categories.add(IT)
+ET = ProductCategory.objects.get(pk=2)
+third_product.categories.add(ET)
+
+2.2
+product = Product.objects.get(name="Philosopher's Stone (1997)")
+product.name = "Half-Blood Prince (2005)"
+product.save()
+
+2.3
+cat = ProductCategory.objects.get(name="Books and Media")
+cat.name = "Books"
+cat.save() 
+
+2.4
+book_product = Product.objects.filter(categories=7)
+book_product.delete()
+
