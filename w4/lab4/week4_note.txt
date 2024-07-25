@@ -1,0 +1,9 @@
+-filter() return >= 1 
+entries = Entry.objects.filter(headline__startswith="eiei")
+return เป็น query set
+
+-exclude() ไม่เอาค่าที่ query เข้าไปข้างใน 
+entries = Entry.objects.exclude(headline__startswith="eiei") #ไม่เอาค่าที่ขึ้นต้นด้วย eiei
+
+-get() return เเค่ 1 ถ้ามัน query เเล้ว >1 จะ errorทันที
+คุณสมบัติ get คือพอได้ข้อมูลมาเเล้วจะเป็น object พร้อมใช้งาน ไม่ใช่ query set ที่มีข้อมูล > 1 เเถว
