@@ -1,0 +1,115 @@
+1.1 ใช้ annotate + F
+from django.db.models import Count, F, Value
+discount_order = Payment.objects.annotate(after_discount_price=F("price")-F("discount")).order_by("-after_discount_price")[:10]
+
+for i in discount_order:
+    print("ID: "+str(i.id)+", PRICE: "+ str(i.price)+", DISCOUNT "+str(i.discount)+", AFTER_DISCOUNT "+str(i.after_discount_price))
+
+1.2 filter + annotate
+discount_gt = Payment.objects.annotate(after_discount_price=F("price")-F("discount")).filter(after_discount_price__gt=500000).order_by("-after_discount_price")
+
+for i in discount_gt:
+    print("ID: "+str(i.id)+", PRICE: "+ str(i.price)+", DISCOUNT "+str(i.discount)+", AFTER_DISCOUNT "+str(i.after_discount_price))
+
+
+1.3 annotate + concat
+
+from django.db.models.functions import Concat
+import json
+
+cus_name = Customer.objects.annotate(full_name = Concat('first_name', Value(" "),'last_name')).order_by("full_name")[:5]
+
+json.dumps(cus_name, indent=4, sort_keys=False)
+
+
+3.1 Avg
+
+from django.db.models import Avg
+
+product_avg = Product.objects.filter(remaining_amount__gt = 0).aggregate(avg=Avg("price"))
+
+
+print(product_avg)
+
+
+3.2 Sum
+
+from django.db.models import Avg
+
+product_sum = CartItem.objects.filter(cart__create_date__month = 5).aggregate(sum=Sum("product__price"))
+
+
+print(product_sum)
+
+
+
+3.3
+from django.db.models import Count
+from django.db.models import Q
+
+product = Product.objects.annotate(count=Count("categories__name", filter=Q(Q(categories__name = "Electronics") | Q(categories__name = "Jewelry"), price__range=(8000, 50000))))
+product = Product.objects.aggregate(count=Sum("categories__name", filter=Q(Q(categories__name = "Electronics") | Q(categories__name = "Jewelry"), price__range=(8000, 50000))))
+
+
+product_elec = Product.objects.filter(categories__name = "Electronics", price__range=(8000,50000)).count()
+product_jew = Product.objects.filter(categories__name = "Jewelry", price__range=(8000,50000)).count()
+
+print(product_elec)
+
+print(product_jew)
+
+
+4.
+-เพิ่มเเถว
+cus = Customer.objects.filter(first_name = "Manit")
+
+order1 = Order.objects.create(customer = cus.id, order_date = "2024-08-05", remark = "ฉันรวย อยากใช้เงินเยอะๆ")
+
+diamond = Product.objects.filter(name = "Diamond Stud Earrings")
+sofa = Product.objects.filter(name = "Sofa")
+Gold = Product.objects.filter(name = "Rose Gold Hoop Earrings")
+
+order_item1 = OrderItem.objects.create(order = order1.id, product =diamond.id , amount = 1)
+order_item2 = OrderItem.objects.create(order = order1.id, product =sofa.id , amount = 2)
+order_item3 = OrderItem.objects.create(order = order1.id, product =Gold.id , amount = 1)
+
+pay = Payment.objects.create(order = order1.id, payment_date="2024-08-06", remark="ลูกค้า VIP ของเรา", price)
+
+
+-เเสดงผล
+
+5.1
+
+pro = Product.objects.filter(categories__name = "Information Technology").order_by("id")[:10]
+
+for i in pro:
+    print("PRODUCT ID: "+str(i.id)+", PRODUCT NAME: "+i.name, end =", PRODUCT CATEGORY: ")
+    count = i.categories.all().count()
+    for j in i.categories.all():
+        print(j.name, end=" ")
+        count -= 1
+        if count != 0:
+            print(",", end=" ")
+    print("\n")
+
+5.2
+
+#1
+cate1 = ProductCategory.objects.get(name = "Books and Media")
+cate1.name = "Books and Toys"
+cate1.save()
+cate1 = ProductCategory.objects.get(name = "Books and Toys")
+#2
+
+
+product_toy_game = Product.objects.filter(categories__name = "Toys and Games")
+
+for i in product_toy_game:
+    i.categories.add(cate1)
+
+cate2 = ProductCategory.objects.get(name = "Toys and Games")
+cate2.delete()
+
+#3
+product_book_toy = Product.objects.filter(categories__name = "Books and Toys").count()
+print(product_book_toy)
