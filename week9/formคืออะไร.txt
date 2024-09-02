@@ -1,0 +1,12 @@
+ข้อดี form
+1.valid ข้อมูล
+2.เเปลง datatype ให้ตรงกับที่เรากำหนดเลยไม่ต้องมาเเก้เอง เช่น input เป็น date/time เเล้วเราเอาไปใช้ได้เลยไม่ต้องเเปลงเอง
+form.cleaned_data["your_name"]
+3.{{ form }} จะ render input ให้เราเลยทั้งหมดที่เรากำหนด // เราสามารถ render ทีละ field ได้ด้วยกรณีอยากใช้ framework หรือจัดองค์ประกอบเอง ทำให้สวยขึ้น
+
+
+Widgets
+-ช่วยการ render tag ใน html เช่นอยากได้ text area, select, choices
+-สามารถใส่ attribute ที่เป็นของ html ได้ด้วย เช่น size
+des = forms.CharField(label="About yourself", max_length=500, 
+                      widget=forms.Textarea(attrs={"cols":20, "rows":5}))
