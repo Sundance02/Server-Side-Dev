@@ -1,0 +1,60 @@
+-bound form คือ form ที่กรอกข้อมูลเเล้ว
+-unbound คือ ยังไม่กรอกข้อมูล
+
+-cleaned_data เป็น มีรูปเเบบเป็น dict 
+EX การเข้าถึงข้อมูล
+first_name = form.cleaned_data["first_name"]  
+
+
+-ปกติ form ของ django จะ filter ให้เอง
+เเต่เราสามารถกำหนด filter ของเราเพิ่มเองได้ด้วย
+
+วิธี1)
+slug = forms.CharField(validators=[validators.validate_slug])
+https://docs.djangoproject.com/en/5.1/ref/validators/
+
+วิธี2.1) filter เเค่ 1 field
+
+class ContactForm(forms.Form):
+    subject = forms.CharField(max_length=100)
+    message = forms.CharField()
+    sender = forms.EmailField()
+    cc_myself = forms.BooleanField(required=False)
+
+---------สร้าง method มา filter โดย method ต้องขึ้นต้นด้วย clean_ตั้งชื่อเอง
+    def clean_sender(self):
+        data = self.cleaned_data["sender"]
+        if data != "bundit@it.kmitl.ac.th":
+            raise ValidationError("Sender must be Bundit!")
+
+        # Always return a value to use as the new cleaned data, even if
+        # this method didn't change it.
+        return data
+
+วิธี2.2) filter ทีเดียวทั้ง form
+
+---------ชื่อ clean ได้เลย
+    def clean(self):
+        cleaned_data = super().clean()
+        cc_myself = cleaned_data.get("cc_myself")
+        subject = cleaned_data.get("subject")
+
+        if cc_myself and subject:
+            # Only do something if both fields are valid so far.
+            if "help" not in subject:
+                raise ValidationError(
+                    "Did not send for 'help' in the subject despite CC'ing yourself."
+                )
+        return cleaned_data
+
+
+
+
+-Model form คือ form ที่ทำการ import field ใน Model มาให้ field ใน form ของเราเลยไม่ต้องมาประกาศเอง
+
+
+
+
+-ข้อดีของการย้ายการ valid,save ข้อมูลง db ไปใน form
+จะเห็นได้ว่า code ใน view นั้นสั้นลงไปเยอะมากๆ เราทำการย้าย validation logic และการ save() ไปไว้ใน form หมดแล้ว
+
