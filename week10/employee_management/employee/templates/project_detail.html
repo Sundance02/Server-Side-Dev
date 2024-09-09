@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}Project Detail{% endblock %}
+
+{% block head %}
+<h1>Project Detail</h1>
+{% endblock %}
+
+{% block content %}
+<div>
+    <form class="form" id="project-form" method="post" style="margin-top: 15px; width: 100%;">
+        {% csrf_token %}
+        <div class="" style="display: flex; gap: 10px">
+            <div class="div-name" style="width: 500px;">
+                <!-- label, form.name -->
+                <h2 for="">Project Name</h2>
+                {{form.name}}
+            </div>
+
+            <div class="div-start-date">
+                <h2 for="">Start Date</h2>
+                {{form.start_date}}
+            </div>
+
+            <div class="div-due-date">
+                <h2 for="">Due Date</h2>
+
+                {{form.due_date}}
+            </div>
+        </div>
+
+
+        <!-- h2, form.description -->
+        <h2 for="">Description</h2>
+        {{form.description}}
+        <!-- h2, form.manager -->
+        <h2 for="">Project Manager</h2>
+
+        {{form.manager}}
+        <!-- h2, form.staff -->
+        <h2 for="">Select Staff</h2>
+        {{form.staff}}
+
+        <button type="submit" style="width: 80px;">Save</button>
+    </form>
+</div>
+
+<br />
+<br />
+
+<div>
+    <div class="head">
+        <h2>Employee in this project</h2>
+    </div>
+    <div class="itemGroup">
+        {% for i in project.staff.all %}
+        <!-- วนลูปแสดงข้อมูลพนักงาน -->
+        <div class="item">
+            <!-- id ของพนักงาน ชื่อ นามสกุล -->
+            <div>{{i.id}}.{{i.first_name}}.{{i.last_name}}</div>
+            <!-- position name -->
+            <div></div>
+
+            <div class="action">
+                <!-- path สำหรับ ลบพนักงานออกจาก project ใช้ method GET ใน View -->
+                <a href="#"><button class="delete">Kick Staff</button></a>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+{% endblock %}

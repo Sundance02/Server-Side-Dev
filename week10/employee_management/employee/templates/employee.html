@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Employee
+{% endblock %}
+
+{% block head %}
+<h1>Emaployee</h1>
+{% endblock %}
+
+{% block content %}
+<div>
+  <br>
+  <!-- กำหนด path ไปยังหน้า form เพิ่มพนักงาน -->
+  <a href="{% url 'add_employee'  %}"><button class="newemp">New Employee</button></a>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>Full Name</th>
+      <th>Genger</th>
+      <th>Birth Date</th>
+      <th>Hire Date</th>
+      <th>Salary</th>
+      <th>Department</th>
+      <th>Position</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <!-- วนลูปแสดงข้อมูลพนักงาน -->
+    {% for i in Employees %}
+
+    <tr>
+
+      <!-- ชื่อ นามสกุล -->
+      <td>{{i.first_name}} {{i.last_name}}</td>
+      <!-- เพศ -->
+      {% if i.gender == 'M' %}
+      <td>Male</td>
+      {% elif i.gender == 'F' %}
+      <td>Female</td>
+      {% else %}
+      <td>Other</td>
+      {% endif %}
+      <!-- วันเกิด -->
+      <td>{{i.birth_date|date:"d/m/Y"}}</td>
+      <!-- วันเริ่มงาน -->
+      <td>{{i.hire_date|date:"d/m/Y"}}</td>
+      <!-- เงินเดือน -->
+      <td>{{i.salary}}</td>
+      <!-- แผนก -->
+      <td>{{i.position.department.name}}</td>
+      <!-- ตำแหน่งงาน -->
+      <td>{{i.position.name}}</td>
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+{% endblock %}
