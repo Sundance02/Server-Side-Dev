@@ -1,0 +1,89 @@
+-transaction ใน database จะรวม operation ทั้งหมดที่ต้องทำเป็น1ก้อนเเล้วทำ
+เช่น โอนเงิน
+account a โอนเงิน 100 ไป b (-100)
+account b ได้รับเงิน 100 จาก a(+100)
+
+1.Create record ในฐานข้อมูลสำหรับการโอนเงิน 100 บาทจาก Account A ไปยัง Account B
+2.อ่านข้อมูล balance ของ Account A
+3.หักลบเงิน 100 บาทจาก balance ของ Account A
+4.อ่านข้อมูล balance ของ Account B
+5.เพิ่มเงิน 100 บาทไปที่ balance ของ Account B
+
+ลองนึกภาพว่าไฟดับหลังจากขั้นตอนที่ 3 จะเกิดอะไรขึ้น?
+สมมุติ A มีเงิน 1000, B ก็มีเงิน 1000
+ไฟดับขั้น3
+A มีเงิน 900, B มีเงิน 1000
+ทำไม B เงินไม่เพิ่ม เพราะว่าไฟดับก่อน update ให้เงิน B
+
+****จึงเป็นที่มาที่ทุกครั้งที่ต้องมีการ update ตารางฐานข้อมูล เช่น insert update delete ต้องใช้ transaction
+
+
+
+-How do database transactions work?
+เราลองมาดูว่า life cycle ของ database transaction จะมีสถานะ (state) อะไรบ้าง
+ขั้น0คือต้องเปิด transaction (Begin Transaction)
+1.Active states: It is the first state during the execution of a transaction. A transaction is active as long as its instructions (read or write operations) are performed.
+2.Partially committed(เป็นเหมือน savepoint): A change has been executed in this state, but the database has not yet committed the change on disk. In this state, data is stored in the memory buffer, and the buffer is not yet written to disk.
+3.Committed: In this state, all the transaction updates are permanently stored in the database. Therefore, it is not possible to rollback the transaction after this point.
+4.Failed: If a transaction fails or has been aborted in the active state or partially committed state, it enters into a failed state.
+5.Terminated state: This is the last and final transaction state after a committed or aborted state. This marks the end of the database transaction life cycle.
+
+
+-การใช้ transaction ใน django
+1.ใช้ decorator
+
+from django.db import transaction
+@transaction.atomic(พอเอา decorator นี้ไปครอบ view นี้ เเค่นี้ viewนี้จะมีคุณสมบัติ atomic)
+def viewfunc(request):
+    # This code executes inside a transaction.
+    do_stuff()
+
+ปล.ไม่ควร try catch exception ใน transaction.atomic
+
+วิธีที่ถูกต้องถ้าเราต้องการ catch exception คือ ใช้ รูปแบบของ context manager ก่อน เเล้วดัก try ข้างนอก
+@transaction.atomic
+def viewfunc(request):
+    create_parent()
+
+    try:
+        with transaction.atomic():
+            generate_relationships()
+    except IntegrityError:
+        handle_exception()
+
+    add_children()
+ใช้ try ข้างนอก transaction.atomic() เเบบนี้ จะทำให้ django สามารถ rollback ได้ก่อนกรณีเกิด error เเล้วหลังจากนั้นถ้าเราอยาก handle ก็สามารถทำได้ข้างนอกเเบบนี้ เผื่อกรณีอยากส่งข้อความไปหาผู้ใช้ว่า ข้อมูลของคุณ...error
+
+2.รูปแบบของ context manager
+
+from django.db import transaction
+def viewfunc(request):
+    # This code executes in autocommit mode (Django's default).
+    do_stuff()
+
+    with transaction.atomic():
+        # This code executes inside a transaction.
+        do_more_stuff()
+
+Django จัดการ transaction ดังนี้:
+
+1.ทำการ opens transaction เมื่อมีการทำงานของ atomic block ตัวนอกสุด
+2.สร้าง savepoint เมื่อมีการเข้าทำงานใน atomic block ตัวใน
+3.ทำการ release ถ้าสำเร็จ หรือ roll back ถ้าerror เมื่อออกจาก atomic block ตัวใน
+4.ทำการ commit ถ้าสำเร็จ หรือ roll back ถ้าerror transaction เมื่ออกจาก atomic block ตัวนอกสุด
+
+
+
+
+-Multiple db เป็นการสร้าง router เมื่อมี db > 1 ตัวในการใช้งานในเเอพ
+DATABASE_ROUTERS = ["path.to.AuthRouter", "path.to.PrimaryReplicaRouter"] ตำเเหน่งการวางมีผลมันจะเช็คจากซ้ายไปขวา ถ้าซ้ายไม่ผ่าน ก็จะมา ขวา
+
+-Manually selecting a database อันนี้เขียนมือ ไม่ใช้ router
+>>> # This will run on the 'default' database.
+>>> Author.objects.all()
+
+>>> # So will this.
+>>> Author.objects.using("default")
+
+>>> # This will run on the 'other' database.
+>>> Author.objects.using("other")

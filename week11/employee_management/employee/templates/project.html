@@ -1,0 +1,38 @@
+
+{% extends "layout.html" %}
+
+{% load static %}
+
+{% block title %}Project{% endblock %}
+
+{% block head %}
+<h1>Project List</h1>
+{% endblock %}
+
+{% block content %}
+<div class="itemGroup">
+    <div>
+        <br>
+        <!-- กำหนด path ไปยังหน้า form สร้าง project -->
+        <a href="{% url 'add_project' %}"><button class="newemp">New Project</button></a>
+      </div>
+    
+      <!-- for loop แสดงผลข้อมูล project -->
+    {% for i in projects %}
+    <div class="item">
+        <!-- โปรเจค id และ ชื่อ -->
+        <div>{{i.id}}.{{i.name}}</div>
+
+        <!-- วันเริ่ม และ วันกำหนดส่งโปรเจค -->
+        <div>{{i.start_date}} - {{i.due_date}}</div>
+
+        <div class="action">
+            <!-- กำหนด path ให้ถูกต้อง ไปยังหน้า project detail -->
+            <a href="{% url 'project_detail' i.id %}" class="edit btn">แก้ไข</a>          
+        </div>
+    </div>
+    {% endfor %}
+    
+</div>
+{% endblock %}
+
